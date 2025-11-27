@@ -9,7 +9,7 @@ from vm_stand_reaper.adapters.environment_variables import EnvironmentVariableNa
 
 class LogLevel(StrEnum):
     CRITICAL = "CRITICAL"
-    ERROR = "CRITICAL"
+    ERROR = "ERROR"
     WARNING = "WARNING"
     INFO = "INFO"
     DEBUG = "DEBUG"
@@ -36,7 +36,7 @@ def setup_logging(
     if (level not in LogLevel) or (level == LogLevel.NOTSET):
         level = LogLevel.INFO
     if format is None:
-        format = "[%(asctime)s] %(levelname)s in %(module)s: %(message)s"
+        format = "[%(asctime)s] %(levelname)-8s [%(name)s:%(funcName)s:%(lineno)d] %(message)s"
     if datefmt is None:
         datefmt = "%Y-%m-%dT%H:%M:%SZ"
 

@@ -1,35 +1,88 @@
-# Легенда
-В компании разрабатывается программный комплекс для linux систем. ПО предназначено для использования на хостах и виртуальных машинах клиентов.
+# VM Stand Reaper
 
-Для E2E и предпродажных демонстраций, создавались("вручную") *stand*(стенды/окружения) в On-premise инфраструктуре компании.
-Стенд состоит из несколько машин на которые устанавливается программный комплекс и все необходимые для него интеграционные сервисы.
+## Overview
 
-С развитием проекта и ввиду оптимизации процессов, была настроена автоматизация(`terragrunt`, `GitLab CI/CD`) для развертывания тестовых и демо стендов в облаке(`Yandex Cloud`).
-Флоу работы со стендом, предполагает его удаление: автоматическое(отложенное, спустя некоторое кол-во часов после развертывания) или мануальное(бессрочное).
-Ввиду различных обстоятельств "непреодолимой силы"(разработчик забыл запустить мануальное удаление, ошибки сетевого характера или ошибки в работе облака), стали накапливаться неиспользуемые ВМ("мертвые души") за которые ежемесячно облачный провайдер выставляет счета.
+This utility is designed to manage virtual machine (VM) "stands" (logical groups) in [**Yandex Compute Cloud**](https://yandex.cloud/ru/docs/compute/)  based on **Yandex Cloud** resource labels.
 
-## Дополнительная информация
-Для идентификации ВМ в облаке была введена система меток, которые должны проставляться при развертывании стендов:
-- **id** = "id-123" (*required*, идентификатор стенда)
-- **team** = "team" (*required*, команда владельца стенда)
-- **owner** = "user" (*required*, владелец стенда)
-- **ttl** = "30h" (время жизни стенда)
-    - Может принимать значения в формате:
-        - "Xm" (кол-во минут)
-        - "Xh" (кол-во часов)
-        - "Xd" (кол-во дней)
-        - "never" (не удалять)
-Принадлежность(группировка) ВМ к стенду определяется по совпадающим *required* меткам.
+## Infrastructure Context
 
-# Задача
-Для снижения расходов на этапах разработки и предпродажных демонстраций, необходимо автоматизировать удаление неиспользуемых стендов в облаке, соблюдая требования:
-- Момент развертывания/создания стенда равен наибольшему моменту времени создания ВМ стенда;
-- Стенд считается неиспользуемым, если с момента его развертывания прошло 4 часа(**ttl** = "4h", по умолчанию). Значение по умолчанию, при необходимости, можно переопределять;
-- Должна иметься возможность удалять стенд, по истечении указанного временного периода(**ttl**) с момента развертывания;
-- Если значение **ttl** не попадает под формат возможных значений, то метка считается не заданной;
-- Должна иметься возможность не удалять указанный стенд - указав **ttl** = "never", при условии, что его можно идентифицировать по всем *required* меткам(**id**, **team**, **owner**);
-- Если в составе стенда присутствуют ВМ с разными значениями **ttl**, то для стенда берется максимальный **ttl** ВМ;
-- Если какая-то из *required* меток не назначена, то ВМ удаляется немедленно;
+In Yandex Compute Cloud, VMs are organized into logical groups called **"Stands"** using a specific set of resource labels. Stand membership is defined by matching required label values.
 
-## Примечание
-Утилиту планируется запускать используя `GitLab CI/CD Scheduled pipelines`. Периодичность запуска раз в час.
+### Required Label Schema
+
+The following labels **must** be applied to VMs during stand deployment:
+
+| Label | Description | Format | Requirement |
+|-------|-------------|--------|-------------|
+| **id** | Unique stand identifier | String (e.g., `"id-123"`) | **Required** |
+| **team** | Owner team name | String (e.g., `"team"`) | **Required** |
+| **owner** | Stand owner (username) | String (e.g., `"user"`) | **Required** |
+
+### Optional Label
+
+| Label | Description | Format | Notes |
+|-------|-------------|--------|-------|
+| **ttl** | Time-to-live (stand lifetime) | `"Xm"` – minutes<br>`"Xh"` – hours<br>`"Xd"` – days<br>`"never"` – permanent | Optional. Default behavior if omitted may vary. |
+
+**Examples of valid TTL values:**
+- `"30m"` – 30 minutes
+- `"24h"` – 24 hours
+- `"7d"` – 7 days
+- `"never"` – stand will not be auto-removed
+
+### Stand Grouping Logic
+
+A VM belongs to a specific stand if and only if all its **required labels** (`id`, `team`, `owner`) match exactly with other VMs. The `ttl` label does not affect grouping.
+
+---
+
+## Installation
+
+### [Python Poetry](https://python-poetry.org/)
+
+```bash
+git clone <repository-url>
+cd <project-directory>
+poetry install
+```
+
+### Docker
+```bash
+docker build -t vm-stand-reaper .
+```
+
+## Usage
+
+```bash
+vm-stand-reaper [options]
+```
+
+## Examples
+
+### Clean VMs in cloud concurrently by VM
+```bash
+vm-stand-reaper -b vm
+```
+
+### Clean VMs in cloud concurrently by VM (Docker)
+```bash
+docker run --rm -it \
+    --env-file ./docker.env \
+    --volume ./vm-stand-reaper-data:/opt/app/data \
+    vm-stand-reaper vm-stand-reaper -b vm
+```
+
+## Configuration
+
+Set environment variables for authentication:
+```bash
+export YANDEX_SERVICE_ACCOUNT_KEY_JSON_PATH="<file-path>"
+export YANDEX_CLOUD_ID="<cloud-id>"
+export YANDEX_FOLDER_ID="<folder-id>"
+```
+or
+```bash
+export YANDEX_OAUTH_TOKEN="<yandex-cloud-oauth-token>"
+export YANDEX_CLOUD_ID="<cloud-id>"
+export YANDEX_FOLDER_ID="<folder-id>"
+```

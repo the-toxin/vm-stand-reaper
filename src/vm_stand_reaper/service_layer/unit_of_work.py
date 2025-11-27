@@ -13,8 +13,16 @@ class AbstractUnitOfWork(abc.ABC):
 
     vms: repository.AbstractRepository
 
-    def __enter__(self) -> AbstractUnitOfWork:
+    async def __aenter__(self):
         return self
 
-    def __exit__(self, *args):
+    async def __aexit__(self, *args):
+        await self.rollback()
+
+    @abc.abstractmethod
+    async def commit(self):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def rollback(self):
         raise NotImplementedError

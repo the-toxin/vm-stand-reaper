@@ -5,11 +5,9 @@ description = "VM Stand Reaper"
 authors = [
     {name = "the-toxin",email = "the.toxin.rus@gmail.com"}
 ]
-readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "yandexcloud (>=0.364.0,<0.365.0)",
-    "dotenv (>=0.9.9,<0.10.0)",
     "pydantic-settings (>=2.11.0,<3.0.0)",
     "click (>=8.3.1,<9.0.0)"
 ]
@@ -18,7 +16,7 @@ dependencies = [
 packages = [{include = "vm_stand_reaper", from = "src"}]
 
 [tool.poetry.scripts]
-vm-stand-reaper = "src.vm_stand_reaper.entrypoints.cli:cli"
+vm-stand-reaper = "vm_stand_reaper.entrypoints.cli:cli"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
@@ -26,9 +24,11 @@ build-backend = "poetry.core.masonry.api"
 
 [dependency-groups]
 dev = [
-    "pytest (>=8.4.2,<9.0.0)"
+    "pytest (>=8.4.2,<9.0.0)",
+    "pytest-asyncio (>=1.3.0,<2.0.0)"
 ]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 testpaths = ["tests"]
+asyncio_mode = "auto"

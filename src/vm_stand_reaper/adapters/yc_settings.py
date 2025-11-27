@@ -19,6 +19,8 @@ class ValidationErrorType(StrEnum):
     VALUE_ERROR = auto()
     LITERAL_ERROR = auto()
     EXTRA_FORBIDDEN = auto()
+    GREATER_THAN_EQUAL = auto()
+    INT_PARSING = auto()
 
 
 class YCAuthorizationKeyKeyAlgorithm(StrEnum):
@@ -87,6 +89,8 @@ class YCEnvironmentSettings(BaseSettings):
         yandex_oauth_token (str, optional): Yandex Cloud authorization token
         yandex_cloud_id (str): ID of the cloud
         yandex_folder_id (str): ID of the folder in cloud
+        yandex_max_active_operations (int): Limit on maximum number
+            of active operations in cloud
     """
 
     model_config = SettingsConfigDict(
@@ -98,6 +102,13 @@ class YCEnvironmentSettings(BaseSettings):
         min_length=1,
         title=f"{EnvironmentVariableName.YANDEX_SERVICE_ACCOUNT_KEY_JSON_PATH}",
         description="Path to the service account key JSON file",
+    )
+    yandex_iam_token: Optional[str] = Field(
+        None,
+        min_length=50,
+        title=f"{EnvironmentVariableName.YANDEX_IAM_TOKEN}",
+        description="Yandex Cloud authentication token",
+        pattern=r"^t1\.[A-Z0-9a-z_-]+[=]{0,2}\.[A-Z0-9a-z_-]{86}[=]{0,2}",
     )
     yandex_oauth_token: Optional[str] = Field(
         None,
@@ -120,14 +131,25 @@ class YCEnvironmentSettings(BaseSettings):
         description="ID of the folder in cloud",
         pattern=r"^[a-zA-Z0-9]+$",
     )
+    yandex_max_active_operations: int = Field(
+        default=10,
+        ge=1,
+        title=f"{EnvironmentVariableName.YANDEX_MAX_ACTIVE_OPERATIONS}",
+        description="The limit on maximum number of active operations in cloud",
+    )
 
     @model_validator(mode="after")
     def validate_at_least_one_auth_method(self):
         if not any(
-            [self.yandex_oauth_token, self.yandex_service_account_key_json_path]
+            [
+                self.yandex_iam_token,
+                self.yandex_oauth_token,
+                self.yandex_service_account_key_json_path,
+            ]
         ):
             raise ValueError(
                 "At least one environment variable must be specified for authentication: "
+                f"'{EnvironmentVariableName.YANDEX_IAM_TOKEN}', "
                 f"'{EnvironmentVariableName.YANDEX_SERVICE_ACCOUNT_KEY_JSON_PATH}' or "
                 f"'{EnvironmentVariableName.YANDEX_OAUTH_TOKEN}'"
             )
@@ -158,6 +180,8 @@ class YCSettings:
                 ValidationErrorType.MISSING,
                 ValidationErrorType.STRING_TOO_SHORT,
                 ValidationErrorType.STRING_PATTERN_MISMATCH,
+                ValidationErrorType.INT_PARSING,
+                ValidationErrorType.GREATER_THAN_EQUAL,
             ]:
                 raise ValueError(
                     "Validation error for environment variable "
