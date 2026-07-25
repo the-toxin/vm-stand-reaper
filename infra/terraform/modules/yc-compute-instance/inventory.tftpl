@@ -1,0 +1,6 @@
+${group}:
+  hosts:
+%{ for index, name  in names ~}
+    ${name}:
+      ansible_host: ${ansible_hosts[index]}
+%{ endfor ~}

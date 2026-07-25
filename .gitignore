@@ -1,4 +1,31 @@
+# ============================================================
+# Common
+# ============================================================
 .vscode
 .env
 __pycache__/
 *.pyc
+
+# ============================================================
+# Terraform & Terragrunt
+# ============================================================
+*.tfstate
+*.tfstate.*
+*.tfstate.backup
+
+*.tfplan
+*.tfplan.json
+
+*.backup
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+*.tfvars
+!example.tfvars
+!*.example.tfvars
+
+**/.terragrunt-cache/
+**/.terraform/
+**/.terraform.lock.hcl
