@@ -48,7 +48,7 @@ poetry install
 
 ### Docker
 ```bash
-docker build -t vm-stand-reaper .
+docker build -t vm-stand-reaper -f docker/Dockerfile .
 ```
 
 ## Usage

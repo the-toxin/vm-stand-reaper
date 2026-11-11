@@ -10,7 +10,7 @@ Terraform module for managing Compute Instance in [Yandex Compute Cloud](https:/
 |------|---------|
 | terraform | >= 1.10 |
 | local | ~> 2.9 |
-| yandex | ~> 0.219 |
+| yandex | ~> 0.127 |
 
 ## Quick Starts
 Look at [terragrunt.hcl.example](terragrunt.hcl.example) for example of how to use module in terragrunt IaC.
