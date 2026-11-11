@@ -84,7 +84,7 @@ poetry run vm-stand-reaper -b stand        # delete per-stand sequentially
 
 # Docker
 docker build -t vm-stand-reaper -f docker/Dockerfile .
-docker run --rm -it -e YANDEX_IAM_TOKEN=$(yc iam create-token) -e YANDEX_CLOUD_ID=$DEV_CLOUD_ID -env YANDEX_FOLDER_ID=$DEV_FOLDER_ID -e STAND_TTL=10m vm-stand-reaper vm-stand-reaper -b vm
+docker run --rm -it -e YANDEX_IAM_TOKEN=$(yc iam create-token) -e YANDEX_CLOUD_ID=$DEV_CLOUD_ID -e YANDEX_FOLDER_ID=$DEV_FOLDER_ID -e STAND_TTL=10m vm-stand-reaper vm-stand-reaper -b vm
 
 # IaC (run dev stand)
 cd infra/terragrunt/dev/stand-01/
