@@ -19,8 +19,9 @@ and produce a report in a fixed format.
 
 - Step 2. Right after the deploy, verify that the stands are deployed by running:
   ```
-  bash .claude/skills/run-full-e2e/scripts/deploy-all-dev.sh
+  bash .claude/skills/run-full-e2e/scripts/get-yc-stands.sh
   ```
+  **The output must contain ALL VMs of the stands deployed in Step 1**.
 
 - Step 3. Run *vm-stand-reaper* in the repository root:
   ```
