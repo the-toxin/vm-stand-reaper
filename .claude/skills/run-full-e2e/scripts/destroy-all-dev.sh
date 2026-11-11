@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -uo pipefail nounset
+set -euo pipefail
 
 export YC_TOKEN=$DEV_YC_TOKEN
 
