@@ -1,0 +1,35 @@
+name: PR Agent
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review, review_requested]
+  issue_comment:
+    types: [created]
+jobs:
+  pr_agent_job:
+    if: |
+      github.event.sender.type != 'Bot' &&
+      (
+        (github.event_name == 'pull_request' &&
+         github.event.pull_request.head.repo.full_name == github.repository) ||
+        (github.event_name == 'issue_comment' &&
+         github.event.issue.pull_request &&
+         github.event.issue.pull_request.html_url != '' &&
+         github.event.comment.user.login == github.repository_owner)
+      )
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+      pull-requests: write
+    steps:
+      - name: PR Agent action step
+        # https://hub.docker.com/layers/pragent/pr-agent/0.50.0-github_action
+        uses: docker://pragent/pr-agent@sha256:548e894a88071180832b2f4233f734d0acd0db1a879e2fcbaa70bac8b8372ebe
+        env:
+          ZAI__KEY: ${{ secrets.PR_AGENT_ZAI_KEY }}
+          CONFIG__MODEL: ${{ vars.PR_AGENT_MODEL }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          github_action_config.auto_review: "true"
+          github_action_config.auto_describe: "true"
+          github_action_config.auto_improve: "false"
+          github_action_config.pr_actions: '["opened", "reopened", "ready_for_review", "review_requested"]'
