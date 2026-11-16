@@ -7,8 +7,8 @@ results across runs with different sets of stands and cases.
 # E2E report for *vm-stand-reaper*
 
 | Stand name | Labels | Stand status | Expected status | Verdict |
-| stand-NN | id=..., team=..., owner=..., ttl=... |---|---| ✅ PASS |
 |---|---|---|---|---|
+| stand-NN | id=..., team=..., owner=..., ttl=... |---|---| ✅ PASS |
 
 # Summary
 
