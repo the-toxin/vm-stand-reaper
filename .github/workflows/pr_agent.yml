@@ -3,6 +3,7 @@ on:
   pull_request:
     types: [opened, reopened, synchronize, ready_for_review, review_requested]
   issue_comment:
+    types: [created]
 jobs:
   pr_agent_job:
     if: |
