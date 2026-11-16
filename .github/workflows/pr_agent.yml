@@ -23,7 +23,8 @@ jobs:
       pull-requests: write
     steps:
       - name: PR Agent action step
-        uses: the-pr-agent/pr-agent@main
+        # https://hub.docker.com/layers/pragent/pr-agent/0.50.0-github_action
+        uses: docker://pragent/pr-agent@sha256:548e894a88071180832b2f4233f734d0acd0db1a879e2fcbaa70bac8b8372ebe
         env:
           ZAI__KEY: ${{ secrets.ZAI__KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
