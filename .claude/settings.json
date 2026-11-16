@@ -12,11 +12,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "CMD=$(jq -r '.tool_input.command // empty'); for p in 'rm -rf /' 'yc resource-manager cloud delete' 'yc resource-manager folder delete' 'yc vpc network delete' 'yc vpc subnet delete' 'yc iam service-account delete' 'docker system prune -a'; do printf '%s' \"$CMD\" | grep -qi \"$p\" && { echo \"BLOCKED: $p\" >&2; exit 2; }; done; exit 0"
-          },
-          {
-            "type": "command",
-            "command": "CMD=$(jq -r '.tool_input.command // empty'); printf '%s' \"$CMD\" | grep -qE '(curl|wget).*\\|.*(bash|sh)' && { echo 'BLOCKED: pipe to shell' >&2; exit 2; }; exit 0"
+            "command": "bash \"${CLAUDE_PROJECT_DIR:-.}/.claude/hooks/bash-guard.sh\""
           }
         ]
       }
