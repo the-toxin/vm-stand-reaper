@@ -92,7 +92,7 @@ DEV_CLOUD_ID=... DEV_FOLDER_ID=... DEV_SUBNET_ID=... terragrunt run --all apply
 
 # IaC (destroy dev stand)
 cd infra/terragrunt/dev/stand-01/
-DEV_CLOUD_ID=... DEV_FOLDER_ID=... DEV_SUBNET_ID=... terragrunt run run --all destroy
+DEV_CLOUD_ID=... DEV_FOLDER_ID=... DEV_SUBNET_ID=... terragrunt run --all destroy
 ```
 ## Testing Guidelines
 - **pytest** is the main framework.
