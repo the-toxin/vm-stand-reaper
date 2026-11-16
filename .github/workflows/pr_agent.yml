@@ -26,7 +26,8 @@ jobs:
         # https://hub.docker.com/layers/pragent/pr-agent/0.50.0-github_action
         uses: docker://pragent/pr-agent@sha256:548e894a88071180832b2f4233f734d0acd0db1a879e2fcbaa70bac8b8372ebe
         env:
-          ZAI__KEY: ${{ secrets.ZAI__KEY }}
+          ZAI__KEY: ${{ secrets.PR_AGENT_ZAI_KEY }}
+          CONFIG__MODEL: ${{ vars.PR_AGENT_MODEL }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           github_action_config.auto_review: "true"
           github_action_config.auto_describe: "true"
